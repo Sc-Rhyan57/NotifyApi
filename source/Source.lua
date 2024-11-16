@@ -1,14 +1,18 @@
--- NotificationAPI: Um sistema moderno para notificações
+-- NotificationAPI - Moderno e Avançado com Suporte a Sons
+-- Autor: Lua Programming GOD
+-- URL do GitHub: Certifique-se de usar o link RAW correto.
 
 local NotificationAPI = {}
 
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
+
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- Configuração inicial
+-- Criar a interface GUI
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "NotificationAPI"
 ScreenGui.Parent = PlayerGui
@@ -18,17 +22,20 @@ local function log(message, messageType)
     print(string.format("[NotificationAPI - %s]: %s", messageType or "INFO", message))
 end
 
---[[ CONFIGURAÇÃO PADRÃO ]]
+log("API inicializada", "STARTUP")
+
+-- Configuração padrão
 NotificationAPI.Config = {
     DefaultDuration = 5,
     DefaultPosition = "Center", -- "Left", "Right", "Center"
     DefaultColor = Color3.fromRGB(255, 255, 255),
     DefaultBackgroundColor = Color3.fromRGB(30, 30, 30),
     DefaultBorderColor = Color3.fromRGB(255, 255, 255),
+    DefaultSoundId = nil, -- Adicione aqui o som padrão ou deixe nulo para nenhum
     DefaultCornerRadius = UDim.new(0.1, 0),
 }
 
---[[ FUNÇÃO PRINCIPAL DE NOTIFICAÇÃO ]]
+--[[ Criação de Notificação ]]
 function NotificationAPI.ShowNotification(params)
     -- Validar parâmetros
     params.title = params.title or "Sem título"
@@ -38,12 +45,13 @@ function NotificationAPI.ShowNotification(params)
     params.borderColor = params.borderColor or NotificationAPI.Config.DefaultBorderColor
     params.duration = params.duration or NotificationAPI.Config.DefaultDuration
     params.position = params.position or NotificationAPI.Config.DefaultPosition
+    params.soundId = params.soundId or NotificationAPI.Config.DefaultSoundId
     params.image = params.image or nil
     params.reaction = params.reaction or nil
 
     log("Criando notificação: " .. params.title, "INFO")
 
-    -- Criar notificação
+    -- Criar a notificação
     local NotificationFrame = Instance.new("Frame")
     NotificationFrame.Size = UDim2.new(0.3, 0, 0.15, 0)
     NotificationFrame.BackgroundColor3 = params.bgColor
@@ -57,7 +65,7 @@ function NotificationAPI.ShowNotification(params)
     Corner.CornerRadius = NotificationAPI.Config.DefaultCornerRadius
     Corner.Parent = NotificationFrame
 
-    -- Adicionar Título
+    -- Adicionar título
     local TitleLabel = Instance.new("TextLabel")
     TitleLabel.Size = UDim2.new(1, -20, 0.3, 0)
     TitleLabel.Position = UDim2.new(0, 10, 0, 5)
@@ -68,7 +76,7 @@ function NotificationAPI.ShowNotification(params)
     TitleLabel.Font = Enum.Font.Gotham
     TitleLabel.Parent = NotificationFrame
 
-    -- Adicionar Descrição
+    -- Adicionar descrição
     local DescriptionLabel = Instance.new("TextLabel")
     DescriptionLabel.Size = UDim2.new(1, -20, 0.5, 0)
     DescriptionLabel.Position = UDim2.new(0, 10, 0.4, 0)
@@ -89,7 +97,21 @@ function NotificationAPI.ShowNotification(params)
         ImageLabel.Parent = NotificationFrame
     end
 
-    -- Botão de Reação (opcional)
+    -- Som (opcional)
+    if params.soundId then
+        local Sound = Instance.new("Sound")
+        Sound.SoundId = "rbxassetid://" .. tostring(params.soundId)
+        Sound.Volume = 1
+        Sound.Parent = NotificationFrame
+        Sound:Play()
+
+        -- Destruir som depois que terminar
+        Sound.Ended:Connect(function()
+            Sound:Destroy()
+        end)
+    end
+
+    -- Botão de reação (opcional)
     if params.reaction then
         local ReactionButton = Instance.new("TextButton")
         ReactionButton.Size = UDim2.new(0.3, 0, 0.2, 0)
@@ -122,8 +144,5 @@ function NotificationAPI.ShowNotification(params)
         log("Notificação destruída", "INFO")
     end)
 end
-
---[[ LOG DE INICIALIZAÇÃO ]]
-log("API carregada com sucesso!", "STARTUP")
 
 return NotificationAPI
