@@ -1,18 +1,15 @@
--- NotificationAPI - Moderno e Avançado com Suporte a Sons
+-- NotificationAPI - Moderno e Avançado
 -- Autor: Lua Programming GOD
--- URL do GitHub: Certifique-se de usar o link RAW correto.
+-- Carregado com sistema de require/loadstring (estilo Orion Lib)
 
 local NotificationAPI = {}
 
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
-local HttpService = game:GetService("HttpService")
-local RunService = game:GetService("RunService")
-
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
--- Criar a interface GUI
+-- Interface da GUI principal
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "NotificationAPI"
 ScreenGui.Parent = PlayerGui
@@ -31,11 +28,11 @@ NotificationAPI.Config = {
     DefaultColor = Color3.fromRGB(255, 255, 255),
     DefaultBackgroundColor = Color3.fromRGB(30, 30, 30),
     DefaultBorderColor = Color3.fromRGB(255, 255, 255),
-    DefaultSoundId = nil, -- Adicione aqui o som padrão ou deixe nulo para nenhum
+    DefaultSoundId = nil, -- Som padrão ou nil para nenhum som
     DefaultCornerRadius = UDim.new(0.1, 0),
 }
 
---[[ Criação de Notificação ]]
+-- Função para criar notificações
 function NotificationAPI.ShowNotification(params)
     -- Validar parâmetros
     params.title = params.title or "Sem título"
@@ -105,7 +102,7 @@ function NotificationAPI.ShowNotification(params)
         Sound.Parent = NotificationFrame
         Sound:Play()
 
-        -- Destruir som depois que terminar
+        -- Destruir som após término
         Sound.Ended:Connect(function()
             Sound:Destroy()
         end)
